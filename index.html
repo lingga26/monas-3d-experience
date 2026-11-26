@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Monumen Nasional — Monas 3D Experience</title>
+    <meta
+      name="description"
+      content="Jelajahi sejarah pembangunan Monumen Nasional (Monas) Jakarta dari pemancangan pasak 1961 hingga peresmian 1975 dalam pameran arsitektur 3D interaktif."
+    />
+    <meta property="og:title" content="Monumen Nasional — Monas 3D Experience" />
+    <meta
+      property="og:description"
+      content="Pameran interaktif 3D konstruksi Monumen Nasional Jakarta setinggi 132 meter."
+    />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./story_and_archive/story_archive.css" />
+    <style>
+      #boot-veil {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background-color: #0b1426;
+        color: #f4efe6;
+        transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      #boot-veil.is-fading {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #boot-veil[hidden] {
+        display: none !important;
+      }
+      .boot-veil-eyebrow {
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #d4a93c;
+      }
+      .boot-veil-title {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: clamp(22px, 3vw, 32px);
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        color: #f4efe6;
+      }
+      .boot-veil-rule {
+        width: 56px;
+        height: 1px;
+        background-color: #d4a93c;
+        margin-top: 4px;
+      }
+      .boot-veil-progress {
+        width: min(320px, calc(100vw - 48px));
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .boot-veil-progress-meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      .boot-progress-label {
+        font-size: 12px;
+        line-height: 1.35;
+        color: #b8c2d4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .boot-progress-pct {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        font-variant-numeric: tabular-nums;
+        color: #e8c25d;
+        flex-shrink: 0;
+      }
+      .boot-progress-track {
+        width: 100%;
+        height: 6px;
+        border-radius: 999px;
+        background-color: #131f36;
+        border: 1px solid rgba(212, 169, 60, 0.28);
+        overflow: hidden;
+      }
+      .boot-progress-bar {
+        width: 0%;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #d4a93c 0%, #e8c25d 100%);
+        transition: width 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot-veil,
+        .boot-progress-bar {
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/three.module.js",
+          "three/addons/": "./vendor/three/addons/",
+          "museum/": "./"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="./app.js" />
+    <link rel="modulepreload" href="./vendor/three/three.module.js" />
+    <link rel="modulepreload" href="./vendor/three/three.core.js" />
+    <link rel="modulepreload" href="./vendor/three/addons/controls/OrbitControls.js" />
+    <link rel="modulepreload" href="./model/asset_loading_manager.js" />
+    <link rel="modulepreload" href="./model/tower_controller.js" />
+    <link rel="modulepreload" href="./model/materials.js" />
+    <link rel="modulepreload" href="./model/floor_textures.js" />
+    <link rel="modulepreload" href="./world/medan_merdeka.js" />
+    <link rel="modulepreload" href="./world/atmosphere.js" />
+    <link rel="modulepreload" href="./perf/fps_and_drawcalls/index.js" />
+  </head>
+  <body>
+    <main id="stage-viewport" aria-label="Pameran 3D Monumen Nasional Jakarta 1961–1975">
+      <canvas id="world-canvas"></canvas>
+      <div id="vignette-layer" aria-hidden="true"></div>
+    </main>
+
+    <div id="museum-ui-root"></div>
+
+    <div id="boot-veil" role="status" aria-live="polite">
+      <span class="boot-veil-eyebrow">Jakarta · Medan Merdeka · 1961–1975</span>
+      <span class="boot-veil-title">Monumen Nasional</span>
+      <span class="boot-veil-rule" aria-hidden="true"></span>
+      <div class="boot-veil-progress">
+        <div class="boot-veil-progress-meta">
+          <span id="boot-progress-label" class="boot-progress-label">Mempersiapkan aset 3D…</span>
+          <span id="boot-progress-pct" class="boot-progress-pct">0%</span>
+        </div>
+        <div
+          id="boot-progress-track"
+          class="boot-progress-track"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-valuetext="0%"
+          aria-labelledby="boot-progress-label"
+        >
+          <div id="boot-progress-bar" class="boot-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+    <script>
+      setTimeout(function () {
+        var veil = document.getElementById('boot-veil');
+        if (
+          veil &&
+          !veil.hidden &&
+          !veil.classList.contains('is-fading') &&
+          veil.dataset.bootError !== '1'
+        ) {
+          veil.innerHTML =
+            '<span class="boot-veil-eyebrow">Jakarta · Medan Merdeka</span>' +
+            '<span class="boot-veil-title">Monumen Nasional 3D</span>' +
+            '<p style="max-width:340px;text-align:center;font-size:13px;line-height:1.5;color:#b8c2d4;margin:8px 16px;">Pemuatan berlangsung lebih lama dari biasa. Pastikan WebGL aktif atau muat ulang halaman.</p>' +
+            '<button type="button" onclick="window.location.reload()" style="padding:9px 18px;border-radius:6px;border:1px solid #d4a93c;background:#d4a93c;color:#0b1426;font-weight:700;cursor:pointer;">Muat Ulang</button>';
+        }
+      }, 8000);
+    </script>
+  </body>
+</html>

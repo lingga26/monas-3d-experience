@@ -1,0 +1,558 @@
+/**
+ * Monas 3D Experience — Option A ("Emas dan Langit Jakarta") Stylesheet (`style.css`)
+ */
+
+:root {
+  --monas-night-blue: #0b1426;
+  --monas-surface: #131f36;
+  --monas-surface-elevated: #192946;
+  --monas-surface-border: rgba(212, 169, 60, 0.28);
+  --monas-border-subtle: rgba(244, 239, 230, 0.14);
+  --monas-ivory: #f4efe6;
+  --monas-ivory-muted: #b8c2d4;
+  --monas-gold: #d4a93c;
+  --monas-gold-bright: #e8c25d;
+  --monas-gold-ink: #0b1426;
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--monas-night-blue);
+  color: var(--monas-ivory);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#stage-viewport {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--monas-night-blue);
+}
+
+#world-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+#vignette-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 58%,
+    rgba(11, 20, 38, 0.42) 100%
+  );
+}
+
+#museum-ui-root {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+#museum-ui-root > * {
+  pointer-events: auto;
+}
+
+/* =========================================================
+   Top Compact Header
+   ========================================================= */
+.monas-header {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.monas-header-brand {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 14px;
+  background: var(--monas-surface);
+  border: 1px solid var(--monas-surface-border);
+  border-radius: 6px;
+}
+
+.monas-header-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--monas-ivory);
+}
+
+.monas-header-sub {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--monas-gold);
+}
+
+.monas-header-controls {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.monas-segmented-group {
+  display: inline-flex;
+  background: var(--monas-surface);
+  border: 1px solid var(--monas-surface-border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.monas-seg-btn,
+.monas-pure-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--monas-ivory-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.monas-pure-btn {
+  background: var(--monas-surface);
+  border: 1px solid var(--monas-surface-border);
+  border-radius: 6px;
+  color: var(--monas-ivory);
+  padding: 8px 12px;
+}
+
+.monas-seg-btn:hover,
+.monas-pure-btn:hover {
+  color: var(--monas-ivory);
+  background: var(--monas-surface-elevated);
+}
+
+.monas-seg-btn.is-active,
+.monas-pure-btn.is-active {
+  background: var(--monas-gold);
+  color: var(--monas-gold-ink);
+  font-weight: 600;
+}
+
+.monas-seg-btn:focus-visible,
+.monas-pure-btn:focus-visible,
+.monas-explore-btn:focus-visible,
+.monas-rail-dot:focus-visible,
+.monas-ctrl-btn:focus-visible,
+.monas-preset-btn:focus-visible,
+.monas-restart-btn:focus-visible,
+.monas-placard-collapse-btn:focus-visible {
+  outline: 2px solid var(--monas-gold-bright);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   Landing Intro Overlay
+   ========================================================= */
+.monas-landing-intro[hidden] {
+  display: none !important;
+}
+
+.monas-landing-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 40px 44px;
+  background: linear-gradient(
+    90deg,
+    rgba(11, 20, 38, 0.82) 0%,
+    rgba(11, 20, 38, 0.45) 45%,
+    rgba(11, 20, 38, 0.08) 100%
+  );
+  pointer-events: none;
+}
+
+.monas-landing-card {
+  pointer-events: auto;
+  max-width: 440px;
+  background: var(--monas-surface);
+  border: 1px solid var(--monas-surface-border);
+  border-radius: 8px;
+  padding: 28px 30px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+}
+
+.monas-landing-eyebrow {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--monas-gold);
+}
+
+.monas-landing-title {
+  margin: 0 0 12px;
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 400;
+  line-height: 1.12;
+  color: var(--monas-ivory);
+}
+
+.monas-landing-sub {
+  margin: 0 0 22px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--monas-ivory-muted);
+}
+
+.monas-explore-btn {
+  appearance: none;
+  border: 1px solid var(--monas-gold-bright);
+  background: var(--monas-gold);
+  color: var(--monas-gold-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.14s ease;
+}
+
+.monas-explore-btn:hover {
+  background: var(--monas-gold-bright);
+}
+
+.monas-explore-btn:active {
+  transform: translateY(1px);
+}
+
+/* =========================================================
+   Right Vertical Timeline Rail (Desktop)
+   ========================================================= */
+.monas-timeline-rail[hidden] {
+  display: none !important;
+}
+
+.monas-timeline-rail {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 24;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 16px 14px;
+  background: var(--monas-surface);
+  border: 1px solid var(--monas-surface-border);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.monas-rail-detents {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.monas-rail-dot {
+  appearance: none;
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px;
+  cursor: pointer;
+  color: var(--monas-ivory-muted);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.monas-rail-pip {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(244, 239, 230, 0.24);
+  border: 1px solid rgba(244, 239, 230, 0.35);
+  transition: transform 0.16s ease, background-color 0.16s ease;
+}
+
+.monas-rail-dot.is-passed .monas-rail-pip {
+  background: rgba(212, 169, 60, 0.55);
+  border-color: var(--monas-gold);
+}
+
+.monas-rail-dot.is-active .monas-rail-pip {
+  background: var(--monas-gold);
+  border-color: var(--monas-ivory);
+  transform: scale(1.35);
+}
+
+.monas-rail-dot.is-active {
+  color: var(--monas-gold-bright);
+  font-weight: 700;
+}
+
+.monas-rail-year {
+  letter-spacing: 0.04em;
+  min-width: 36px;
+  text-align: right;
+}
+
+.monas-rail-slider-wrap {
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid var(--monas-border-subtle);
+}
+
+.monas-rail-slider {
+  width: 100%;
+  accent-color: var(--monas-gold);
+  cursor: pointer;
+}
+
+.monas-rail-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.monas-ctrl-btn {
+  appearance: none;
+  border: 1px solid var(--monas-border-subtle);
+  background: var(--monas-surface-elevated);
+  color: var(--monas-ivory);
+  font-size: 11px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.monas-ctrl-play {
+  background: var(--monas-gold);
+  border-color: var(--monas-gold);
+  color: var(--monas-gold-ink);
+  font-weight: 700;
+}
+
+.monas-ctrl-btn:hover {
+  border-color: var(--monas-gold);
+}
+
+/* =========================================================
+   Bottom-Right 3D Interaction Controls Hint
+   ========================================================= */
+#museum-ui-root > .monas-controls-hint,
+.monas-controls-hint {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 22;
+  pointer-events: none;
+  user-select: none;
+  max-width: calc(100vw - 420px);
+  padding: 7px 12px;
+  background: rgba(19, 31, 54, 0.88);
+  border: 1px solid rgba(212, 169, 60, 0.22);
+  border-radius: 6px;
+}
+
+.monas-controls-hint-text {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  line-height: 1.35;
+  letter-spacing: 0.015em;
+  color: var(--monas-ivory-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pure View hides narrative & timeline except header button */
+body.is-pure-view .monas-placard,
+body.is-pure-view .monas-timeline-rail,
+body.is-pure-view .monas-controls-hint,
+body.is-pure-view .monas-header-brand,
+body.is-pure-view .monas-segmented-group {
+  display: none !important;
+}
+
+body.is-landing-mode .monas-placard,
+body.is-landing-mode .monas-timeline-rail {
+  display: none !important;
+}
+
+/* =========================================================
+   Debug Drawer (only mounted with ?debug=1 or Ctrl+Shift+D)
+   ========================================================= */
+.monas-debug-drawer {
+  position: fixed;
+  right: 16px;
+  top: 72px;
+  z-index: 50;
+  width: 260px;
+  background: #0b1426;
+  border: 1px solid #d4a93c;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 12px;
+  color: #f4efe6;
+}
+.monas-debug-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.monas-debug-sec {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.monas-debug-zones {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+.monas-debug-pre {
+  margin: 8px 0 0;
+  font-size: 11px;
+  white-space: pre-wrap;
+  color: #b8c2d4;
+}
+
+/* =========================================================
+   Mobile Portrait Responsive (<= 768px)
+   ========================================================= */
+@media (max-width: 768px) {
+  .monas-header {
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .monas-header-brand {
+    padding: 6px 10px;
+  }
+
+  .monas-header-title {
+    font-size: 14px;
+  }
+
+  .monas-header-controls {
+    justify-content: space-between;
+  }
+
+  .monas-seg-btn,
+  .monas-pure-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .monas-landing-intro {
+    padding: 20px 16px 28px;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .monas-landing-card {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .monas-controls-hint {
+    display: none;
+  }
+
+  /* Slim horizontal timeline bar docked at bottom */
+  .monas-timeline-rail {
+    right: 10px;
+    left: 10px;
+    top: auto;
+    bottom: 10px;
+    transform: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .monas-rail-detents {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .monas-rail-dot {
+    padding: 4px 2px;
+  }
+
+  .monas-rail-year {
+    display: none;
+  }
+
+  .monas-rail-slider-wrap {
+    display: none;
+  }
+
+  .monas-rail-controls {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
